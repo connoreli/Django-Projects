@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import AccountForm, TransactionForm
 from .models import Account, Transaction
 
@@ -16,12 +16,12 @@ def create_account(request):
         if form.is_valid():
             form.save()
             return redirect('index')
-    content = {'form': form }
+    content = {'form': form}
     return render(request, 'checkbook/CreateNewAccount.html', content)
 
 def balance(request):
-    account = get_object_or_404(Account, pk=pk)
-    transactions = Transaction.Transactions.filter(account=pk)
+    account = get_object_or_404(Account, pk = pk)
+    transactions = Transaction.Transactions.filter(account = pk)
     current_total = account.initial_deposit
     table_contents = { }
     for t in transactions:
@@ -35,10 +35,9 @@ def balance(request):
     return render(request, 'checkbook/BalanceSheet.html', content)
 
 def transaction(request):
-    form = AccountForm(data=request.POST or None)
+    form = TransactionForm(data=request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
-            form.save()
             pk = request.POST['account']
             form.save()
             return balance(request, pk)
